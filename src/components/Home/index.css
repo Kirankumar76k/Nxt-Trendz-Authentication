@@ -1,0 +1,20 @@
+/* Write your CSS code here */
+.body-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: roboto;
+  min-width: 600px;
+}
+.heading {
+  font-size: 48px;
+}
+.noticed-container {
+  width: 40%;
+}
+.noticed-img {
+  height: 500px;
+}
+.description {
+  font-size: 18px;
+}
