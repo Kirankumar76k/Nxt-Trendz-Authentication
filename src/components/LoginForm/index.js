@@ -3,7 +3,7 @@ import {Component} from 'react'
 import './index.css'
 
 class LoginForm extends Component {
-  state = {username: '', password: '', ErrMsg: ''}
+  state = {username: '', password: '', ErrMsg: '', showErrorMsg: false}
 
   onChangeUsername = event => {
     this.setState({username: event.target.value})
@@ -15,7 +15,12 @@ class LoginForm extends Component {
 
   onSubmitSuccess = () => {
     const {history} = this.props
+
     history.replace('/')
+  }
+
+  onSubmitFailure = ErrMsg => {
+    this.setState({showErrorMsg: true, ErrMsg})
   }
 
   onSubmitForm = async event => {
@@ -28,21 +33,56 @@ class LoginForm extends Component {
       body: JSON.stringify(userDetails),
     }
     const response = await fetch(url, options)
-    const data = response.json()
-    console.log(data)
-    if (username === '') {
-      this.setState({ErrMsg: '*Username is not Found'})
-    } else if (password === '') {
-      this.setState({ErrMsg: '*Password is not Found'})
-    } else if (response.ok === true) {
+    const data = await response.json()
+    if (response.ok === true) {
       this.onSubmitSuccess()
     } else {
-      this.setState({ErrMsg: '*Username and Password didnt Match'})
+      this.onSubmitFailure(data.error_msg)
     }
   }
 
+  renderUsername = () => {
+    const {username} = this.state
+
+    return (
+      <>
+        <label htmlFor="username" className="label">
+          USERNAME
+        </label>
+        <input
+          type="text"
+          placeholder="Username"
+          onChange={this.onChangeUsername}
+          className="input"
+          id="username"
+          value={username}
+        />
+      </>
+    )
+  }
+
+  renderPassword = () => {
+    const {password} = this.state
+
+    return (
+      <>
+        <label htmlFor="password" className="label">
+          PASSWORD
+        </label>
+        <input
+          type="password"
+          id="password"
+          placeholder="Password"
+          onChange={this.onChangePassword}
+          className="input"
+          value={password}
+        />
+      </>
+    )
+  }
+
   render() {
-    const {ErrMsg} = this.state
+    const {ErrMsg, showErrorMsg} = this.state
     return (
       <div className="bg-container">
         <div className="app-container">
@@ -58,34 +98,12 @@ class LoginForm extends Component {
               className="login-logo"
             />
             <form onSubmit={this.onSubmitForm} className="form">
-              <div className="input-container">
-                <label htmlFor="username" className="label">
-                  USERNAME
-                </label>
-                <input
-                  type="text"
-                  placeholder="Username"
-                  onChange={this.onChangeUsername}
-                  className="input"
-                  id="username"
-                />
-              </div>
-              <div className="input-container">
-                <label htmlFor="password" className="label">
-                  PASSWORD
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="Password"
-                  onChange={this.onChangePassword}
-                  className="input"
-                />
-              </div>
+              <div className="input-container">{this.renderUsername()}</div>
+              <div className="input-container">{this.renderPassword()}</div>
               <button type="submit" className="button">
                 Login
               </button>
-              <p className="err-msg">{ErrMsg}</p>
+              {showErrorMsg && <p className="err-msg">*{ErrMsg}</p>}
             </form>
           </div>
         </div>
